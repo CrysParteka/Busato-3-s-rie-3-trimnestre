@@ -1,0 +1,54 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Sofadi+One&display=swap');
+:root {
+    --bg-color: #0C0C0C;
+    --primary-color: #9B3922;
+    --secondary-color: #F2613F;
+    --font: "Pacifico", cursive;
+}
+
+body {
+    background-color: var(--bg-color);
+}
+
+header {
+    background-color: var(--primary-color);
+    text-align: center;
+    padding: 1px;
+}
+
+h1 {
+    font-size: 2rem;
+    color: var(--bg-color);
+     font-weight: 700;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    font-weight: 400;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--bg-color);
+     margin: 0 2rem 1rem 0rem;
+     font-size: 1.2rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+    transform: scale(0.90);
+    transition: transform 0.1s;
+}
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    width: 100%;
+    height: 3rem;
+    margin-top: 2rem;
+}
