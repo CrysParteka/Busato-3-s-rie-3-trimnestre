@@ -5,7 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redes Sociais</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: #1f1f1f;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #f05454;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+        .graficos-section {
+            margin-top: 20px;
+        }
+        .graficos-container {
+            margin: 20px 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+        }
+        .perguntas {
+            margin: 20px 0;
+            background-color: #1f1f1f;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .perguntas h2 {
+            margin: 0 0 10px;
+        }
+        .perguntas p {
+            margin: 5px 0;
+        }
+        .input-section {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,14 +62,135 @@
     </header>
     <main class="graficos-section">
         <section id="graficos-container" class="graficos-container">
-            <!-- crie os gráficos/texto aqui -->
+            <div id="grafico1" style="width:100%;height:400px;"></div>
+            <div id="grafico2" style="width:100%;height:400px;"></div>
+            <div id="grafico3" style="width:100%;height:400px;"></div>
+        </section>
+        
+        <section class="perguntas">
+            <h2>Perguntas para Refletir</h2>
+            <p>1. Quais redes sociais você utiliza com mais frequência?</p>
+            <select id="resposta1">
+                <option value="Facebook">Facebook</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Twitter">Twitter</option>
+                <option value="LinkedIn">LinkedIn</option>
+            </select>
+
+            <p>2. Você acredita que o tempo gasto nas redes sociais é produtivo?</p>
+            <select id="resposta2">
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+            </select>
+
+            <p>3. Como você acha que as redes sociais impactam a comunicação entre as pessoas?</p>
+            <select id="resposta3">
+                <option value="Positivo">Positivo</option>
+                <option value="Negativo">Negativo</option>
+            </select>
+
+            <p>4. Quais medidas você considera importantes para um uso saudável das redes sociais?</p>
+            <select id="resposta4">
+                <option value="Limitar o tempo">Limitar o tempo</option>
+                <option value="Usar com responsabilidade">Usar com responsabilidade</option>
+            </select>
+
+            <button id="gerarGrafico">Gerar Gráfico</button>
         </section>
     </main>
     <footer>
-        <p>Desenvolvido por Gui Lima</p>
+        <p>Desenvolvido por João - Germano - Leonardo - Eloisa</p>
     </footer>
-    <script type="module" src="graficos/common.js"></script>
-    <script type="module" src="graficos/informacoesGlobais.js"></script>
-    <script type="module" src="graficos/quantidadeUsuarios.js"></script>
+
+    <script>
+        const urlGlobais = 'https://raw.githubusercontent.com/guilhermeonrails/api/main/dados-globais.json';
+        const urlUsuarios = 'https://raw.githubusercontent.com/guilhermeonrails/api/main/numero-usuarios.json';
+
+        async function vizualizarInformacoesGlobais() {
+            const res = await fetch(urlGlobais);
+            const dados = await res.json();
+            const pessoasConectadas = (dados.total_pessoas_conectadas / 1e9).toFixed(2);
+            const pessoasNoMundo = (dados.total_pessoas_mundo / 1e9).toFixed(2);
+            const horas = parseInt(dados.tempo_medio);
+            const minutos = Math.round((dados.tempo_medio - horas) * 60);
+            const porcentagemConectada = ((pessoasConectadas / pessoasNoMundo) * 100).toFixed(2);
+
+            const paragrafo = document.createElement('p');
+            paragrafo.classList.add('graficos-container__texto');
+            paragrafo.innerHTML = `Você sabia que o mundo tem <span>${pessoasNoMundo} bilhões</span> de pessoas e que aproximadamente <span>${pessoasConectadas} bilhões</span> estão conectadas em alguma rede social e passam em média <span>${horas} horas</span> e <span>${minutos} minutos</span> conectadas.<br>Isso significa que aproximadamente <span>${porcentagemConectada}%</span> de pessoas estão conectadas em alguma rede social.`;
+
+            const container = document.getElementById('graficos-container');
+            container.appendChild(paragrafo);
+        }
+
+        async function quantidadeUsuariosPorRede() {
+            const res = await fetch(urlUsuarios);
+            const dados = await res.json();
+            const nomeDasRedes = Object.keys(dados);
+            const quantidadeDeUsuarios = Object.values(dados);
+
+            const data = [
+                {
+                    x: nomeDasRedes,
+                    y: quantidadeDeUsuarios,
+                    type: 'bar',
+                    marker: { color: '#F05454' }
+                }
+            ];
+
+            const layout = {
+                title: 'Quantidade de Usuários por Rede Social',
+                plot_bgcolor: '#222831',
+                paper_bgcolor: '#222831',
+                xaxis: { title: 'Redes Sociais', color: '#ffffff' },
+                yaxis: { title: 'Número de Usuários (milhões)', color: '#ffffff' }
+            };
+
+            Plotly.newPlot('grafico2', data, layout);
+        }
+
+        function gerarGraficoInterativo() {
+            const redeSocial = document.getElementById('resposta1').value;
+            const tempoProdutivo = document.getElementById('resposta2').value;
+            const impactoComunicacao = document.getElementById('resposta3').value;
+            const medidas = document.getElementById('resposta4').value;
+
+            // Dados fictícios baseados nas respostas
+            const dados = {
+                'Facebook': [60, 30, 10],
+                'Instagram': [50, 40, 10],
+                'Twitter': [40, 40, 20],
+                'LinkedIn': [30, 50, 20]
+            };
+
+            const usuarios = dados[redeSocial] || [0, 0, 0];
+            const labels = ['Uso Pessoal', 'Uso Profissional', 'Outros'];
+
+            const data = [
+                {
+                    labels: labels,
+                    values: usuarios,
+                    type: 'pie',
+                    marker: { colors: ['#F05454', '#30475E', '#D65DB1'] }
+                }
+            ];
+
+            const layout = {
+                title: `Distribuição do Uso de ${redeSocial} baseado nas Respostas`,
+                plot_bgcolor: '#222831',
+                paper_bgcolor: '#222831',
+            };
+
+            Plotly.newPlot('grafico3', data, layout);
+        }
+
+        document.getElementById('gerarGrafico').addEventListener('click', () => {
+            gerarGraficoInterativo();
+        });
+
+        // Chama as funções para renderizar os gráficos
+        vizualizarInformacoesGlobais();
+        quantidadeUsuariosPorRede();
+    </script>
 </body>
 </html>
